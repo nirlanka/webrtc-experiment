@@ -1,7 +1,26 @@
 const server_connection = new WebSocket('ws://[::1]:4000');
+
 server_connection.onmessage = msg => {
-  if (!peer_connection)
-    start()
+  if (!peer_connection) {
+    start_stream(false);
+  }
+  
+  const signal = JSON.parse(msg.data);
+  
+  if (signal.sdp) {
+    peer_connection.setRemoteDescription(
+      new RTCSessionDescription(signal.sdp),
+      
+      () => {
+        if (signal.sdp.type === 'offer') {
+          peer_connection.createAnswer(
+            on_description,
+            err => console.error('Failed to create answer. ', err)
+          )
+        }
+      }
+    );
+  }
 }
 
 let local_stream;
@@ -34,26 +53,29 @@ function start_stream(is_caller) {
   peer_connection = new RTCPeerConnection(peer_connection_config);
   
   peer_connection.onicecandidate = event => {
-    if (event.candidate) 
+    if (event.candidate) {
       server_connection.send(JSON.stringify({ ice: event.candidate }));
+    }
   }
   
   peer_connection.onaddstream = event => console.log('Got ');
   
   peer_connection.addStream(local_stream);
   
-  if (is_caller) 
+  if (is_caller) {
     peer_connection.createOffer(
-      description => {
-        console.log('Got description');
-        
-        peer_connection.setLocalDescription(
-          description, 
-          () => server_connection.send(JSON.stringify({ sdp: description })),
-          () => console.error('Failed to set description.')
-        )
-      },
-      
+      on_description,
       err => console.error('Failed to create offer. ', err)
     )
   }
+}
+
+function on_description(description) {
+    console.log('Got description');
+
+    peer_connection.setLocalDescription(
+      description, 
+      () => server_connection.send(JSON.stringify({ sdp: description })),
+      () => console.error('Failed to set description.')
+    );
+}
