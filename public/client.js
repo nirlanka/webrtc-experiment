@@ -8,14 +8,21 @@ const peer_conn_config = {
   ]
 }
 
-const constraints = {
-  video: true,
-  
-}
-
 const local_video = document.getElementById('local-video');
 const remote_video = document.getElementById('remote-video');
 
 const server_connection = new WebSocket('ws://[::1]:4000');
 server_connection.onmessage = () => {}
 
+let local_stream;
+
+navigator.getUserMedia(
+  { video: true, audio: true, }, 
+  stream => {
+    local_stream = stream;
+    local_video.src = window.URL.createObjectURL(stream);
+  },
+  err => {
+    console.error('Failed getting user video. ', err);
+  }
+)

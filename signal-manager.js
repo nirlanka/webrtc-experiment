@@ -1,7 +1,7 @@
 module.exports = { init, };
 
 const SocketServer = require('ws').Server;
-const port = process.env.PORT2;
+const port = process.env.SOCKET_PORT;
 const socket_server = new SocketServer({ port, });
 
 function init() {
