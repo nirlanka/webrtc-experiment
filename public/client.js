@@ -1,7 +1,8 @@
 const server_connection = new WebSocket(
   'wss://' 
   + window.location.host.replace(/\:[0-9]+/, '')
-  + ':4000/' + window.location.pathname
+  + ':4000' 
+  // + window.location.pathname
 );
 
 server_connection.onmessage = msg => {
@@ -34,7 +35,12 @@ navigator.getUserMedia(
   
   stream => {
     local_stream = stream;
-    local_video.src = window.URL.createObjectURL(stream);
+    
+    try {
+      local_video.srcObject = stream;
+    } catch (error) {
+      local_video.src = window.URL.createObjectURL(stream);
+    }
   },
   
   err => console.error('Failed getting user video. ', err)
