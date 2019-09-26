@@ -1,4 +1,8 @@
-const server_connection = new WebSocket('ws://[::1]:4000');
+const server_connection = new WebSocket(
+  'wss://' 
+  + window.location.host.replace(/\:[0-9]+/, '')
+  + ':4000/' + window.location.pathname
+);
 
 server_connection.onmessage = msg => {
   if (!peer_connection) {

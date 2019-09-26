@@ -12,6 +12,7 @@ app.get('/', (request, response) => {
 
 const port = process.env.PORT;
 
-const listener = app.listen(port, () => {
-  console.log('Your app is listening on port ' + port);
-});
+const listener = app.listen(
+  port, 
+  () => console.log('Your app is listening on port ' + port)
+)
