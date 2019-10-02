@@ -5,6 +5,9 @@ const config = {
     {
       url: "stun:stun.l.google.com:19302"
     },
+    {
+      url: "stun:stun1.l.google.com:19302"
+    },
   ]
 };
 
@@ -33,25 +36,26 @@ let remote_messages = [];
 remote_connection.ondatachannel = e => {
   remote_channel = e.channel;
   
-  remote_channel.onmessage = e => remote_messages.push(e.data);
   remote_channel.onclose = () => is_connected = false;
+  remote_channel.onmessage = e => {
+    remote_messages.push(e.data);
+    console.log(e.data);
+  }
 }
 
-async function init_offers() {
+(async () => {
   // Local offer
 
   const local_offer = await local_connection.createOffer();
-  local_connection.setLocalDescription(local_offer).then();
-  remote_connection.setRemoteDescription(local_offer).then();
+  await local_connection.setLocalDescription(local_offer);
+  await remote_connection.setRemoteDescription(local_offer);
 
   // Remote answer
 
   const remote_answer = await remote_connection.createAnswer();
-  await local_connection.setRemoteDescription(remote_answer).then();
-  await remote_connection.setLocalDescription(remote_answer).then();
-}
-
-init_offers();
+  await local_connection.setRemoteDescription(remote_answer);
+  await remote_connection.setLocalDescription(remote_answer);
+})();
 
 // UI
 
