@@ -1,0 +1,1 @@
+const peer_connection = new RTCPeerConnection();
