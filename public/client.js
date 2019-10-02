@@ -14,8 +14,8 @@ const config = {
 const local_connection = new RTCPeerConnection(config);
 const remote_connection = new RTCPeerConnection(config);
 
-local_connection.onicecandidate = e => remote_connection.addIceCandidate(e.candidate);
-remote_connection.onicecandidate = e => local_connection.addIceCandidate(e.candidate);
+local_connection.onicecandidate = e => e.candidate && remote_connection.addIceCandidate(e.candidate);
+remote_connection.onicecandidate = e => e.candidate && local_connection.addIceCandidate(e.candidate);
 
 // Local channel
 
@@ -24,9 +24,18 @@ const local_channel = local_connection.createDataChannel('messaging-channel');
 let is_connected;
 const local_messages = [];
 
-local_channel.onopen = () => is_connected = true;
-local_channel.onclose = () => is_connected = false;
-local_channel.onmessage = e => local_messages.push(e.data);
+local_channel.onopen = () => {
+  is_connected = true;
+  console.log('is_connected', is_connected);
+}
+local_channel.onclose = () => {
+  is_connected = false;
+  console.log('is_connected', is_connected);
+}
+local_channel.onmessage = e => {
+  local_messages.push(e.data);
+  console.log('local_messages <-', e.data);
+}
 
 // Remote channel
 
@@ -36,10 +45,13 @@ let remote_messages = [];
 remote_connection.ondatachannel = e => {
   remote_channel = e.channel;
   
-  remote_channel.onclose = () => is_connected = false;
+  remote_channel.onclose = () => {
+    is_connected = false;
+    console.log('is_connected', is_connected);
+  }
   remote_channel.onmessage = e => {
     remote_messages.push(e.data);
-    console.log(e.data);
+    console.log('remote_messages <-', e.data);
   }
 }
 
