@@ -7,31 +7,30 @@ const config = {
 };
 
 const local_connection = new RTCPeerConnection(config);
-const local_channel = local_connection.createDataChannel('messagi-channel');
-
 const remote_connection = new RTCPeerConnection(config);
-const remote_channel = remote_connection.createDataChannel('meta');
 
-local_channel.onicecandidate = event => ;
+local_connection.onicecandidate = e => remote_connection.addIceCandidate(e.candidate);
+remote_connection.onicecandidate = e => local_connection.addIceCandidate(e.candidate);
 
-local_channel.onmessage = event => {
-  console.log('received', event.data);
+const local_channel = local_connection.createDataChannel('messaging-channel');
+
+let is_connected;
+const local_messages = [];
+
+local_channel.onopen = () => is_connected = true;
+local_channel.onclose = () => is_connected = false;
+local_channel.onmessage = e => local_messages.push(e.data);
+
+let remote_channel;
+let remote_messages = [];
+
+remote_connection.ondatachannel = e => {
+  remote_channel = e.channel;
   
-  const data = JSON.parse(event.data);
-  
-  if (data.type === 'login') {
-    // 
-  }
+  remote_channel.onmessage = e => remote_messages.push(e.data);
+  remote_channel.onclose = () => is_connected = false;
 }
 
-local_channel.onopen = event => console.log('channel open');
-
-local_channel.onclose = event => console.log('channel close');
-
-function on_login(data) {
-  if (data.is_accepted) {
-    console.log('failed login');
-  } else {
-    // 
-  }
+function onclick_send_message() {
+  local_channel.send('Lorem ipsum dolor sit amet.');
 }
