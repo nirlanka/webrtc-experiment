@@ -7,10 +7,15 @@ app.use(express.static('public'));
 
 const peers = [];
 
-app.post('/rtc/peer', (req, res) => {
+app.post('/rtc/peers', (req, res) => {
   res.send(peers);
   peers.push(req.body);
-  console.log('peers', peers);
+  console.log('set - peers', peers);
+})
+
+app.get('/rtc/peers', (req, res) => {
+  res.send(peers);
+  console.log('get - peers', peers);
 })
 
 app.get('/', (request, response) => {

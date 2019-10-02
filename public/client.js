@@ -5,3 +5,10 @@ const ice_servers = [
 ];
 
 const peer_connection = new RTCPeerConnection(ice_servers);
+const channel = peer_connection.createDataChannel('meta');
+
+channel.onmessage = event => console.log('>> received', event.data);
+
+channel.onopen = event => console.log('>> channel open');
+
+channel.onclose = event => console.log('>> channel close');
