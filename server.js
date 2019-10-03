@@ -12,15 +12,9 @@ app.post('/rtc/peers/list', (req, res) => {
   if (Object.keys(req.body).length > 0) {
     req.body.id = ++id;
     peers.push(req.body);
-    
-    res.send({
-      id,
-      peers,
-    });
+    res.send({ id });
   } else {
-    res.send({
-      peers,
-    });
+    res.send({});
   }
   
   console.log('set - peers. current peers', peers.length);

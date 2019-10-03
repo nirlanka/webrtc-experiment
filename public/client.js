@@ -73,19 +73,23 @@ let id;
   });
   const peers_state = await peers_state_response.json();
   id = peers_state.id;
-  const remote_offer = peers_state.peers.find(p => p.id !== id);
   
-  if (remote_offer) {
-    await local_connection.setRemoteDescription(remote_offer);
-  }
+  const timer = setInterval(async () => {
+    const remote_offer = peers_state.peers.find(p => p.id !== id);
   
-  // await remote_connection.setRemoteDescription(local_offer);
+    if (remote_offer) {
+      clearInterval(timer);
+      
+      await remote_connection.setRemoteDescription(remote_offer);
+      
+      // Remote answer
 
-  // Remote answer
-
-  // const remote_answer = await remote_connection.createAnswer();
-  // await local_connection.setRemoteDescription(remote_answer);
-  // await remote_connection.setLocalDescription(remote_answer);
+      const local_answer = await remote_connection.createAnswer();
+      await local_connection.setRemoteDescription(remote_offer);
+      await remote_connection.setLocalDescription(local_answer);
+    }
+    
+  }, 1000)
 })();
 
 // UI
