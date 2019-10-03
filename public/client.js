@@ -46,50 +46,50 @@ remote_connection.ondatachannel = e => {
   remote_channel.onmessage = e => console.log('remote_messages <-', e.data);
 }
 
+remote_connection.onicecandidate = e => e.candidate && local_connection.addIceCandidate(e.candidate);
+local_connection.onicecandidate = e => e.candidate && remote_connection.addIceCandidate(e.candidate);
+
 let id;
 
-(async () => {
+local_connection.onnegotiationneeded = async () => {
   // Local offer
 
   const local_offer = await local_connection.createOffer();
   await local_connection.setLocalDescription(local_offer);
+  await remote_connection.setRemoteDescription(local_offer);
   
-  // Remote offer
-  
-  const peer_register_resp = await fetch('/rtc/peers/add', { 
-    method: 'POST', 
-    headers: { 'Content-Type': 'application/json;charset=utf-8' },
-    body: JSON.stringify(local_offer) 
-  });
-  id = (await peer_register_resp.json()).id;
-  
-  const timer = setInterval(async () => {
-    const peers_list_resp = await fetch('/rtc/peers/list');
-    const peers = await peers_list_resp.json();
-    const remote_offer = peers.find(p => p.id !== id);
-  
-    if (remote_offer) {
-      clearInterval(timer);
-      
-      await fetch('/rtc/peers/drop', { 
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json;charset=utf-8' },
-        body: JSON.stringify(remote_offer) 
-      });
-      
-      await remote_connection.setRemoteDescription(remote_offer);
-      
-      // Remote answer
+  // Remote answer
 
-      const local_answer = await remote_connection.createAnswer();
-      await local_connection.setRemoteDescription(local_answer);
-      await remote_connection.setLocalDescription(local_answer);
+  const local_answer = await remote_connection.createAnswer();
+  await remote_connection.setLocalDescription(local_answer);
+  await local_connection.setRemoteDescription(local_answer);
+  
+//   const peer_register_resp = await fetch('/rtc/peers/add', { 
+//     method: 'POST', 
+//     headers: { 'Content-Type': 'application/json;charset=utf-8' },
+//     body: JSON.stringify(local_offer) 
+//   });
+//   id = (await peer_register_resp.json()).id;
+  
+//   const timer = setInterval(async () => {
+//     const peers_list_resp = await fetch('/rtc/peers/list');
+//     const peers = await peers_list_resp.json();
+//     const remote_offer = peers.find(p => p.id !== id);
+  
+//     if (remote_offer) {
+//       clearInterval(timer);
       
-      remote_connection.onicecandidate = e => e.candidate && local_connection.addIceCandidate(e.candidate);
-      local_connection.onicecandidate = e => e.candidate && remote_connection.addIceCandidate(e.candidate);
-    }
-  }, 2000);
-})();
+//       await fetch('/rtc/peers/drop', { 
+//         method: 'POST', 
+//         headers: { 'Content-Type': 'application/json;charset=utf-8' },
+//         body: JSON.stringify(remote_offer) 
+//       });
+      
+//       remote_connection.onicecandidate = e => e.candidate && local_connection.addIceCandidate(e.candidate);
+//       local_connection.onicecandidate = e => e.candidate && remote_connection.addIceCandidate(e.candidate);
+//     }
+//   }, 2000);
+}
 
 // UI
 
