@@ -14,32 +14,27 @@ const config = {
 const local_connection = new RTCPeerConnection(config);
 const remote_connection = new RTCPeerConnection(config);
 
-remote_connection.onicecandidate = e => e.candidate && local_connection.addIceCandidate(e.candidate);
-
 // Local channel
 
 const local_channel = local_connection.createDataChannel('messaging-channel');
 
 let is_connected;
-const local_messages = [];
 
 local_channel.onopen = () => {
-  is_connected = true;
-  console.log('is_connected', is_connected);
+  if (local_channel.readyState === 'open') {
+    is_connected = true;
+    console.log('is_connected', is_connected);
+  }
 }
 local_channel.onclose = () => {
   is_connected = false;
   console.log('is_connected', is_connected);
 }
-local_channel.onmessage = e => {
-  local_messages.push(e.data);
-  console.log('local_messages <-', e.data);
-}
+local_channel.onmessage = e => console.log('local_messages <-', e.data);
 
 // Remote channel
 
 let remote_channel;
-let remote_messages = [];
 
 remote_connection.ondatachannel = e => {
   remote_channel = e.channel;
@@ -48,10 +43,7 @@ remote_connection.ondatachannel = e => {
     is_connected = false;
     console.log('is_connected', is_connected);
   }
-  remote_channel.onmessage = e => {
-    remote_messages.push(e.data);
-    console.log('remote_messages <-', e.data);
-  }
+  remote_channel.onmessage = e => console.log('remote_messages <-', e.data);
 }
 
 let id;
@@ -61,7 +53,6 @@ let id;
 
   const local_offer = await local_connection.createOffer();
   await local_connection.setLocalDescription(local_offer);
-  // --> Generates ICE candidates (?)
   
   // Remote offer
   
@@ -91,9 +82,10 @@ let id;
       // Remote answer
 
       const local_answer = await remote_connection.createAnswer();
-      await local_connection.setRemoteDescription(remote_offer);
+      await local_connection.setRemoteDescription(local_answer);
       await remote_connection.setLocalDescription(local_answer);
       
+      remote_connection.onicecandidate = e => e.candidate && local_connection.addIceCandidate(e.candidate);
       local_connection.onicecandidate = e => e.candidate && remote_connection.addIceCandidate(e.candidate);
     }
   }, 2000);
