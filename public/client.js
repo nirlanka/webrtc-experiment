@@ -64,7 +64,7 @@ local_connection.onnegotiationneeded = async () => {
   await remote_connection.setLocalDescription(local_answer);
   await local_connection.setRemoteDescription(local_answer);
   
-  const peer_register_resp = await fetch('/rtc/peers/add', { 
+  const peer_register_resp = await fetch('/add', { 
     method: 'POST', 
     headers: { 'Content-Type': 'application/json;charset=utf-8' },
     body: JSON.stringify(local_offer) 
@@ -80,7 +80,7 @@ local_connection.onnegotiationneeded = async () => {
       is_in_interval = true;
     }
     
-    const peers_list_resp = await fetch('/rtc/peers/list');
+    const peers_list_resp = await fetch('/list');
     const peers = await peers_list_resp.json();
     const remote_offer = peers.find(p => p.id !== id);
   
@@ -89,14 +89,11 @@ local_connection.onnegotiationneeded = async () => {
       
       console.log('found peer');
       
-      await fetch('/rtc/peers/drop', { 
+      await fetch('/drop', { 
         method: 'POST', 
         headers: { 'Content-Type': 'application/json;charset=utf-8' },
         body: JSON.stringify(remote_offer) 
       });
-      
-//       remote_connection.onicecandidate = e => e.candidate && local_connection.addIceCandidate(e.candidate);
-//       local_connection.onicecandidate = e => e.candidate && remote_connection.addIceCandidate(e.candidate);
     }
     
     is_in_interval = false;
