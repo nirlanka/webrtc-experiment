@@ -71,7 +71,15 @@ local_connection.onnegotiationneeded = async () => {
   });
   id = (await peer_register_resp.json()).id;
   
+  let is_in_interval = false;
+  
   const timer = setInterval(async () => {
+    if (is_in_interval) {
+      return;
+    } else {
+      is_in_interval = true;
+    }
+    
     const peers_list_resp = await fetch('/rtc/peers/list');
     const peers = await peers_list_resp.json();
     const remote_offer = peers.find(p => p.id !== id);
@@ -90,6 +98,8 @@ local_connection.onnegotiationneeded = async () => {
 //       remote_connection.onicecandidate = e => e.candidate && local_connection.addIceCandidate(e.candidate);
 //       local_connection.onicecandidate = e => e.candidate && remote_connection.addIceCandidate(e.candidate);
     }
+    
+    is_in_interval = false;
   }, 2000);
 }
 
