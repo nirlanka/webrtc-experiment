@@ -64,31 +64,33 @@ local_connection.onnegotiationneeded = async () => {
   await remote_connection.setLocalDescription(local_answer);
   await local_connection.setRemoteDescription(local_answer);
   
-//   const peer_register_resp = await fetch('/rtc/peers/add', { 
-//     method: 'POST', 
-//     headers: { 'Content-Type': 'application/json;charset=utf-8' },
-//     body: JSON.stringify(local_offer) 
-//   });
-//   id = (await peer_register_resp.json()).id;
+  const peer_register_resp = await fetch('/rtc/peers/add', { 
+    method: 'POST', 
+    headers: { 'Content-Type': 'application/json;charset=utf-8' },
+    body: JSON.stringify(local_offer) 
+  });
+  id = (await peer_register_resp.json()).id;
   
-//   const timer = setInterval(async () => {
-//     const peers_list_resp = await fetch('/rtc/peers/list');
-//     const peers = await peers_list_resp.json();
-//     const remote_offer = peers.find(p => p.id !== id);
+  const timer = setInterval(async () => {
+    const peers_list_resp = await fetch('/rtc/peers/list');
+    const peers = await peers_list_resp.json();
+    const remote_offer = peers.find(p => p.id !== id);
   
-//     if (remote_offer) {
-//       clearInterval(timer);
+    if (remote_offer) {
+      clearInterval(timer);
       
-//       await fetch('/rtc/peers/drop', { 
-//         method: 'POST', 
-//         headers: { 'Content-Type': 'application/json;charset=utf-8' },
-//         body: JSON.stringify(remote_offer) 
-//       });
+      console.log('found peer');
+      
+      await fetch('/rtc/peers/drop', { 
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json;charset=utf-8' },
+        body: JSON.stringify(remote_offer) 
+      });
       
 //       remote_connection.onicecandidate = e => e.candidate && local_connection.addIceCandidate(e.candidate);
 //       local_connection.onicecandidate = e => e.candidate && remote_connection.addIceCandidate(e.candidate);
-//     }
-//   }, 2000);
+    }
+  }, 2000);
 }
 
 // UI
