@@ -8,7 +8,7 @@ app.use(express.static('public'));
 const peers = [];
 let id = 0;
 
-app.post('/rtc/peers/list', (req, res) => {
+app.post('/rtc/peers/add', (req, res) => {
   if (Object.keys(req.body).length > 0) {
     req.body.id = ++id;
     peers.push(req.body);
@@ -20,15 +20,13 @@ app.post('/rtc/peers/list', (req, res) => {
   console.log('set - peers. current peers', peers.length);
 })
 
-app.get('/rtc/peers/add', (req, res) => {
+app.get('/rtc/peers/list', (req, res) => {
   res.send(peers);
-  console.log('get - peers', peers);
 })
 
-app.post('/rtc/peers/failed', (req, res) => {
-  peers = peers.filter(p => p);
+app.post('/rtc/peers/drop', (req, res) => {
+  peers = peers.filter(p => p.id === req.body.id);
   res.send(peers);
-  console.log('failed - peers', peers);
 })
 
 app.get('/', (request, response) => {

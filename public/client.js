@@ -66,16 +66,17 @@ let id;
   
   // Remote offer
   
-  const peers_state_response = await fetch('/rtc/peers/list', { 
+  const peer_register_resp = await fetch('/rtc/peers/add', { 
     method: 'POST', 
     headers: { 'Content-Type': 'application/json;charset=utf-8' },
     body: JSON.stringify(local_offer) 
   });
-  const peers_state = await peers_state_response.json();
-  id = peers_state.id;
+  id = (await peer_register_resp.json()).id;
   
   const timer = setInterval(async () => {
-    const remote_offer = peers_state.peers.find(p => p.id !== id);
+    const peers_list_resp = await fetch('/rtc/peers/list');
+    const peers = await peers_list_resp.json();
+    const remote_offer = peers.find(p => p.id !== id);
   
     if (remote_offer) {
       clearInterval(timer);
@@ -88,8 +89,7 @@ let id;
       await local_connection.setRemoteDescription(remote_offer);
       await remote_connection.setLocalDescription(local_answer);
     }
-    
-  }, 1000)
+  }, 2000);
 })();
 
 // UI
