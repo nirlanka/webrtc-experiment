@@ -9,12 +9,21 @@ const peers = [];
 let id = 0;
 
 app.post('/rtc/peers/list', (req, res) => {
-  res.send({
-    id: ++id,
-    peers,
-  });
-  peers.push(req.body);
-  console.log('set - peers', peers);
+  if (Object.keys(req.body).length > 0) {
+    req.body.id = ++id;
+    peers.push(req.body);
+    
+    res.send({
+      id,
+      peers,
+    });
+  } else {
+    res.send({
+      peers,
+    });
+  }
+  
+  console.log('set - peers. current peers', peers.length);
 })
 
 app.get('/rtc/peers/add', (req, res) => {

@@ -66,12 +66,18 @@ let id;
   
   // Remote offer
   
-  const peers_state_response = await fetch('/rtc/peers/list', { method: 'POST', body: JSON.stringify(local_offer) });
+  const peers_state_response = await fetch('/rtc/peers/list', { 
+    method: 'POST', 
+    headers: { 'Content-Type': 'application/json;charset=utf-8' },
+    body: JSON.stringify(local_offer) 
+  });
   const peers_state = await peers_state_response.json();
   id = peers_state.id;
   const remote_offer = peers_state.peers.find(p => p.id !== id);
   
-  await local_connection.setRemoteDescription(remote_offer);
+  if (remote_offer) {
+    await local_connection.setRemoteDescription(remote_offer);
+  }
   
   // await remote_connection.setRemoteDescription(local_offer);
 
