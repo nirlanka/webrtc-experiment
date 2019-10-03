@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-const peers = [];
+let peers = [];
 let id = 0;
 
 app.post('/rtc/peers/add', (req, res) => {

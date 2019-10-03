@@ -14,7 +14,6 @@ const config = {
 const local_connection = new RTCPeerConnection(config);
 const remote_connection = new RTCPeerConnection(config);
 
-local_connection.onicecandidate = e => e.candidate && remote_connection.addIceCandidate(e.candidate);
 remote_connection.onicecandidate = e => e.candidate && local_connection.addIceCandidate(e.candidate);
 
 // Local channel
@@ -81,6 +80,12 @@ let id;
     if (remote_offer) {
       clearInterval(timer);
       
+      await fetch('/rtc/peers/drop', { 
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json;charset=utf-8' },
+        body: JSON.stringify(remote_offer) 
+      });
+      
       await remote_connection.setRemoteDescription(remote_offer);
       
       // Remote answer
@@ -88,6 +93,8 @@ let id;
       const local_answer = await remote_connection.createAnswer();
       await local_connection.setRemoteDescription(remote_offer);
       await remote_connection.setLocalDescription(local_answer);
+      
+      local_connection.onicecandidate = e => e.candidate && remote_connection.addIceCandidate(e.candidate);
     }
   }, 2000);
 })();
