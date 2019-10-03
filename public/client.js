@@ -55,12 +55,16 @@ remote_connection.ondatachannel = e => {
   }
 }
 
+const id = ;
+
 (async () => {
   // Local offer
 
   const local_offer = await local_connection.createOffer();
   await local_connection.setLocalDescription(local_offer);
+  // --> Generates ICE candidates
   await remote_connection.setRemoteDescription(local_offer);
+  // TODO: Send offer (?)
 
   // Remote answer
 
