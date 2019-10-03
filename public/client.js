@@ -55,22 +55,31 @@ remote_connection.ondatachannel = e => {
   }
 }
 
-const id = ;
+let id;
 
 (async () => {
   // Local offer
 
   const local_offer = await local_connection.createOffer();
   await local_connection.setLocalDescription(local_offer);
-  // --> Generates ICE candidates
-  await remote_connection.setRemoteDescription(local_offer);
-  // TODO: Send offer (?)
+  // --> Generates ICE candidates (?)
+  
+  // Remote offer
+  
+  const peers_state_response = await fetch('/rtc/peers/list', { method: 'POST', body: JSON.stringify(local_offer) });
+  const peers_state = await peers_state_response.json();
+  id = peers_state.id;
+  const remote_offer = peers_state.peers.find(p => p.id !== id);
+  
+  await local_connection.setRemoteDescription(remote_offer);
+  
+  // await remote_connection.setRemoteDescription(local_offer);
 
   // Remote answer
 
-  const remote_answer = await remote_connection.createAnswer();
-  await local_connection.setRemoteDescription(remote_answer);
-  await remote_connection.setLocalDescription(remote_answer);
+  // const remote_answer = await remote_connection.createAnswer();
+  // await local_connection.setRemoteDescription(remote_answer);
+  // await remote_connection.setLocalDescription(remote_answer);
 })();
 
 // UI

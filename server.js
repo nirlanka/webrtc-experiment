@@ -6,9 +6,13 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 
 const peers = [];
+let id = 0;
 
 app.post('/rtc/peers/list', (req, res) => {
-  res.send(peers);
+  res.send({
+    id: ++id,
+    peers,
+  });
   peers.push(req.body);
   console.log('set - peers', peers);
 })
