@@ -86,13 +86,13 @@ local_connection.onnegotiationneeded = async () => {
     
     const peers_list_resp = await fetch('/list');
     peers = await peers_list_resp.json();
-
-    const select_el = document.getElementById('peer-select');
-    select_el.innerHTML = peers.filter(p => p.id !== id).map(p => `<option value="${p.id}">${p.id}</option>`).join('');
-    select_el.size = peers.length;
     
-    if (peers.some(p => p.id === selected_peer_id)) {
-      select_el.value = selected_peer_id;
+    if (selected_peer_id) {
+      clearInterval(timer);
+    } else {
+      const select_el = document.getElementById('peer-select');
+      select_el.innerHTML = peers.filter(p => p.id !== id).map(p => `<option value="${p.id}">${p.id}</option>`).join('');
+      select_el.size = peers.length;
     }
     
     is_in_interval = false;
@@ -118,7 +118,7 @@ async function onclick_send_message() {
 function onselect_peer(select_el) {
   selected_peer_id = +select_el.value;
   console.log('selected_peer_id', selected_peer_id);
-  select_el.innerHTML = '';
+  select_el.parentNode.removeChild(select_el);
   
   const selected_peer_id_el = document.getElementById('selected-peer-id');
   selected_peer_id_el.innerHTML = selected_peer_id;
