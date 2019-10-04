@@ -1,4 +1,6 @@
-const userid = ;
+// Login
+
+const userid = window.location.hash;
 
 // Connection
 
@@ -11,11 +13,16 @@ const config = {
 
 const connection = new RTCPeerConnection(config);
 
-connection.onicecandidate = e => e.candidate && send_candidate(e.candidate);
-
-function send_candidate(candidate) {
-  const resp = fetch('/ice', {
-    method: 'POST',
-    body: JSON.stringify(candidate)
-  });
+connection.onicecandidate = async e => {
+  if (e.candidate) {
+    e.candidate.userid = userid;
+    
+    await fetch('/ice', {
+      method: 'POST',
+      body: JSON.stringify(e.candidate)
+    });
+    
+    console.log('Sent ICE candidate.')
+  }
 }
+
