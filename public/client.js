@@ -131,7 +131,3 @@ function send_ping() {
 function send_pong() {
   send_channel.send('pong');
 }
-
-// Send ICE candidates
-
-connection.onicecandidates 
