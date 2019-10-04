@@ -64,7 +64,11 @@ send_channel.onopen = e => console.log('readyState', send_channel.readyState);
 
 let other_userid;
 
+let is_in_offer_timer = false;
 const offer_timer = setInterval(async () => {
+  if (is_in_offer_timer) return;
+  else is_in_offer_timer = true;
+
   const peers = await (await fetch('/peers')).json();
   
   other_userid = peers.find(p => p !== userid);
@@ -90,11 +94,17 @@ const offer_timer = setInterval(async () => {
     
     connection.setLocalDescription(offer);
   }
+
+  is_in_offer_timer = false;
 }, 2000);
                                           
 // Send answer
 
+let is_in_answer_timer = false;
 const answer_timer = setInterval(async () => {
+  if (is_in_answer_timer) return;
+  else is_in_answer_timer = true;
+
   const offers = await (await fetch('/offers')).json();
   const other_offer = offers.find(x => x.userid !== userid);
   
@@ -120,11 +130,17 @@ const answer_timer = setInterval(async () => {
       watch_candidates();
     }
   }
+
+  is_in_answer_timer = false;
 }, 2000);
 
 // Handle answer
 
+let is_in_answer_handler_timer = false;
 const answer_handler_timer = setInterval(async () => {
+  if (is_in_answer_handler_timer) return;
+  else is_in_answer_handler_timer = true;
+
   const answers = await (await fetch('/answers')).json();
   const other_answer = answers.find(x => x.userid !== userid);
   
@@ -140,6 +156,8 @@ const answer_handler_timer = setInterval(async () => {
       send_ping();
     }
   }
+
+  is_in_answer_handler_timer = false;
 }, 2000);
 
 // Send message
