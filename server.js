@@ -20,7 +20,9 @@ app.get('/reset', (req, res) => {
 })
 
 app.post('/peer', (req, res) => {
-  peers.push(req.body.userid);
+  req.body && req.body.userid && peers.push(req.body.userid);
+  
+  res.sendStatus(200);
 })
 
 app.post('/ice', (req, res) => {
@@ -34,6 +36,8 @@ app.get('/peers', (req, res) => {
 });
 
 app.post('/offer', (req, res) => {
+  console.log(req.body);
+  
   offers.push(req.body);
   
   res.sendStatus(200);

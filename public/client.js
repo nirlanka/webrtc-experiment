@@ -4,7 +4,9 @@ const userid = window.location.hash.substring(1);
 
 fetch('/peer', {
   method: 'POST',
-  body: JSON.stringify({ userid })
+  body: JSON.stringify({ userid }),
+  headers: { 'Content-Type': 'application/json' },
+  cache: 'no-cache',
 });
 
 // Connection
@@ -24,7 +26,9 @@ connection.onicecandidate = async e => {
     
     await fetch('/ice', {
       method: 'POST',
-      body: JSON.stringify(e.candidate)
+      body: JSON.stringify(e.candidate),
+      headers: { 'Content-Type': 'application/json' },
+      cache: 'no-cache',
     });
     
     console.log('Sent ICE candidate.')
@@ -76,7 +80,9 @@ const offer_timer = setInterval(async () => {
       
       await fetch('/offer', {
         method: 'POST',
-        body: JSON.stringify(offer)
+        body: JSON.stringify(offer),
+        headers: { 'Content-Type': 'application/json' },
+        cache: 'no-cache',
       });
       
       connection.setLocalDescription(offer);
@@ -101,7 +107,9 @@ const answer_timer = setInterval(async () => {
       
       await fetch('/answer', {
         method: 'POST',
-        body: JSON.stringify(answer)
+        body: JSON.stringify(answer),
+        headers: { 'Content-Type': 'application/json' },
+        cache: 'no-cache',
       });
       
       connection.setLocalDescription(answer);
