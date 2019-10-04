@@ -8,6 +8,7 @@ app.use(express.static('public'));
 let ice = [];
 let peers = [];
 let offers = [];
+let answers = [];
 
 app.post('/ice', (req, res) => {
   ice.push(req.body);
@@ -38,6 +39,21 @@ app.get('/offers/pop', (req, res) => {
   const { userid } = req.query;
   
   offers = offers.filter(x => x.userid !== userid);
+  
+  res.sendStatus(200);
+});
+
+app.post('/answer', (req, res) => {
+  answers.push(req.body);
+  
+  res.sendStatus(200);
+});
+
+
+app.get('/answers/pop', (req, res) => {
+  const { userid } = req.query;
+  
+  answers = answers.filter(x => x.userid !== userid);
   
   res.sendStatus(200);
 });

@@ -102,4 +102,36 @@ const answer_timer = setInterval(async () => {
 
 // Handle answer
 
-const answer_
+const answer_handler_timer = setInterval(async () => {
+  const answers = await (await fetch('/answers')).json();
+  const other_answer = answers.find(x => x.userid !== userid);
+  
+  if (other_answer) {
+    clearInterval(answer_handler_timer);
+    
+    await fetch('/answers/pop?userid=' + other_answer.userid);
+    
+    if (!receive_channel) {
+      connection.setRemoteDescription(other_answer);
+      
+      // Send message (1)
+      send_ping();
+    }
+  }
+}, 2000);
+
+// Send message
+
+function send_ping() {
+  send_channel.send('ping');
+}
+
+// Handle message
+
+function send_pong() {
+  send_channel.send('pong');
+}
+
+// Send ICE candidates
+
+connection.onicecandidates 
