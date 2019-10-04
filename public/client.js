@@ -48,18 +48,19 @@ send_channel.onopen = e => console.log('readyState', send_channel.readyState);
 
 // Send offer
 
-let peers;
 let other_userid;
 
 const offer_timer = setInterval(async () => {
-  peers = await (await fetch('/peers')).json();
+  const peers = await (await fetch('/peers')).json();
   
-  const other = peers.find(p => p != userid);
+  other_userid = peers.find(p => p !== userid);
   
   if (other) {
     clearInterval(offer_timer);
     
     other_userid = other;
+    
+    await fetch('/peers/pop/' + other_userid);
     
     if (!receive_channel) {
       const offer = connection.createOffer();
@@ -77,4 +78,11 @@ const offer_timer = setInterval(async () => {
                                           
 // Answer offer
 
-const answer_timer = setInterval(async () => {},)
+const answer_timer = setInterval(async () => {
+  const offers = await (await fetch('/offers')).json();
+  const other_offer = offers.find(x => x.userid !== userid);
+  
+  if (other_offer) {
+    
+  }
+}, 2000);
