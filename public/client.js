@@ -1,6 +1,6 @@
 // Login
 
-const userid = window.location.hash;
+const userid = window.location.hash.substring(1);
 
 // Connection
 
