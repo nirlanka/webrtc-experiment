@@ -19,9 +19,12 @@ app.get('/reset', (req, res) => {
   res.sendStatus(200);
 })
 
+app.post('/peer', (req, res) => {
+  peers.push(req.body.userid);
+})
+
 app.post('/ice', (req, res) => {
   ice.push(req.body);
-  peers.push(req.body.userid);
   
   res.sendStatus(200);
 });

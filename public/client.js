@@ -2,6 +2,11 @@
 
 const userid = window.location.hash.substring(1);
 
+fetch('/peer', {
+  method: 'POST',
+  body: JSON.stringify({ userid })
+});
+
 // Connection
 
 const config = {
@@ -64,7 +69,7 @@ const offer_timer = setInterval(async () => {
     clearInterval(offer_timer);
     
     await fetch('/peers/pop?userid=' + other_userid);
-    
+  } else {
     if (!receive_channel) {
       const offer = await connection.createOffer();
       offer.userid = userid;
