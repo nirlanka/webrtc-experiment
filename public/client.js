@@ -36,17 +36,17 @@ local_channel.onmessage = e => console.log('local_messages <-', e.data);
 
 let remote_channel;
 
-remote_connection.ondatachannel = e => {
-  remote_channel = e.channel;
+// remote_connection.ondatachannel = e => {
+//   remote_channel = e.channel;
   
-  remote_channel.onclose = () => {
-    is_connected = false;
-    console.log('is_connected', is_connected);
-  }
-  remote_channel.onmessage = e => console.log('remote_messages <-', e.data);
-}
+//   remote_channel.onclose = () => {
+//     is_connected = false;
+//     console.log('is_connected', is_connected);
+//   }
+//   remote_channel.onmessage = e => console.log('remote_messages <-', e.data);
+// }
 
-remote_connection.onicecandidate = e => e.candidate && local_connection.addIceCandidate(e.candidate);
+// remote_connection.onicecandidate = e => e.candidate && local_connection.addIceCandidate(e.candidate);
 local_connection.onicecandidate = e => e.candidate && remote_connection.addIceCandidate(e.candidate);
 
 let id;
@@ -57,12 +57,12 @@ local_connection.onnegotiationneeded = async () => {
 
   const local_offer = await local_connection.createOffer();
   await local_connection.setLocalDescription(local_offer);
-  await remote_connection.setRemoteDescription(local_offer);
+  // await remote_connection.setRemoteDescription(local_offer);
   
   // Remote answer
 
-  const local_answer = await remote_connection.createAnswer();
-  await remote_connection.setLocalDescription(local_answer);
+  // const local_answer = await remote_connection.createAnswer();
+  // await remote_connection.setLocalDescription(local_answer);
   await local_connection.setRemoteDescription(local_answer);
   
   const peer_register_resp = await fetch('/add', { 
