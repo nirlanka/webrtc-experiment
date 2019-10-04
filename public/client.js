@@ -82,10 +82,15 @@ local_connection.onnegotiationneeded = async () => {
     
     const peers_list_resp = await fetch('/list');
     const peers = await peers_list_resp.json();
-    const remote_offer = peers.find(p => p.id !== id);
+    
+    const select_el = document.getElementById('peer-select');
+    select_el.innerHTML = peers.map(p => `<option value="${p.id}">${p.id}</option>`).join('');
+    select_el.size = peers.length;
   
-    if (remote_offer) {
+    if (selected_peer_id) {
       clearInterval(timer);
+      
+      const remote_offer = peers.find(p => p.id !== selected_peer_id);
       
       console.log('found peer');
       
@@ -104,4 +109,10 @@ local_connection.onnegotiationneeded = async () => {
 
 function onclick_send_message() {
   local_channel.send('Lorem ipsum dolor sit amet.');
+}
+
+var selected_peer_id;
+
+function onselect_peer(option) {
+  selected_peer_id = +option.value;
 }
