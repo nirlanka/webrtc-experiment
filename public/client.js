@@ -81,33 +81,33 @@ local_connection.onnegotiationneeded = async () => {
     }
     
     const peers_list_resp = await fetch('/list');
-    const peers = await peers_list_resp.json();
-    
+    peers = await peers_list_resp.json();
+
     const select_el = document.getElementById('peer-select');
     select_el.innerHTML = peers.map(p => `<option value="${p.id}">${p.id}</option>`).join('');
     select_el.size = peers.length;
-  
-    if (selected_peer_id) {
-      clearInterval(timer);
-      
-      const remote_offer = peers.find(p => p.id !== selected_peer_id);
-      
-      console.log('found peer');
-      
-      await fetch('/drop', { 
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json;charset=utf-8' },
-        body: JSON.stringify(remote_offer) 
-      });
+    
+    if (peers.some(p => p.id === selected_peer_id)) {
+      select_el.value = selected_peer_id;
     }
     
     is_in_interval = false;
-  }, 2000);
+  }, 3000);
 }
 
 // UI
 
-function onclick_send_message() {
+var peers;
+
+async function onclick_send_message() {
+  const remote_offer = peers.find(p => p.id !== selected_peer_id);
+      
+    await fetch('/drop', { 
+      method: 'POST', 
+      headers: { 'Content-Type': 'application/json;charset=utf-8' },
+      body: JSON.stringify(remote_offer) 
+    });
+  
   local_channel.send('Lorem ipsum dolor sit amet.');
 }
 
@@ -115,4 +115,5 @@ var selected_peer_id;
 
 function onselect_peer(option) {
   selected_peer_id = +option.value;
+  console.log('selected_peer_id', selected_peer_id);
 }
