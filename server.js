@@ -7,10 +7,21 @@ app.use(express.static('public'));
 
 let ice = [];
 let peers = [];
+let offers = [];
 
 app.post('/ice', (req, res) => {
   ice.push(req.body);
   peers.push(req.body.userid);
+  
+  res.sendStatus(200);
+});
+
+app.get('/peers', (req, res) => {
+  res.send(peers);
+});
+
+app.post('/offer', (req, res) => {
+  offers.push(req.body);
   
   res.sendStatus(200);
 });
