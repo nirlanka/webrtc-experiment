@@ -73,20 +73,22 @@ const offer_timer = setInterval(async () => {
     clearInterval(offer_timer);
     
     await fetch('/peers/pop?userid=' + other_userid);
-  } else {
-    if (!receive_channel) {
-      const offer = await connection.createOffer();
-      offer.userid = userid;
-      
-      await fetch('/offer', {
-        method: 'POST',
-        body: JSON.stringify(offer),
-        headers: { 'Content-Type': 'application/json' },
-        cache: 'no-cache',
-      });
-      
-      connection.setLocalDescription(offer);
-    }
+  }
+
+  if (!receive_channel) {
+    clearInterval(offer_timer);
+
+    const offer = JSON.parse(JSON.stringify(await connection.createOffer()));
+    offer.userid = userid;
+
+    await fetch('/offer', {
+      method: 'POST',
+      body: JSON.stringify(offer),
+      headers: { 'Content-Type': 'application/json' },
+      cache: 'no-cache',
+    });
+    
+    connection.setLocalDescription(offer);
   }
 }, 2000);
                                           
@@ -98,11 +100,11 @@ const answer_timer = setInterval(async () => {
   
   if (other_offer) {
     clearInterval(answer_timer);
-    
+
     await fetch('/offers/pop?userid=' + other_offer.userid);
     
     if (!receive_channel) {
-      const answer = await connection.createAnswer();
+      const answer = JSON.parse(JSON.stringify(await connection.createAnswer()));
       answer.userid = userid;
       
       await fetch('/answer', {

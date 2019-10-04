@@ -36,8 +36,6 @@ app.get('/peers', (req, res) => {
 });
 
 app.post('/offer', (req, res) => {
-  console.log(req.body);
-  
   offers.push(req.body);
   
   res.sendStatus(200);
@@ -88,4 +86,5 @@ app.get('/answers', (req, res) => res.send(answers));
 
 app.get('/', (req, res) => res.sendFile(__dirname + '/views/index.html'));
 
-app.listen(process.env.PORT, () => console.log('Your app is listening on port ' + process.env.PORT));
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log('Your app is listening on port ' + port));
