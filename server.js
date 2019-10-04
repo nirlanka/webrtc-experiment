@@ -26,6 +26,22 @@ app.post('/offer', (req, res) => {
   res.sendStatus(200);
 });
 
+app.get('/peers/pop', (req, res) => {
+  const { userid } = req.query;
+  
+  peers = peers.filter(p => p !== userid);
+  
+  res.sendStatus(200);
+});
+
+app.get('/offers/pop', (req, res) => {
+  const { userid } = req.query;
+  
+  offers = offers.filter(x => x.userid !== userid);
+  
+  res.sendStatus(200);
+});
+
 app.get('/', (req, res) => res.sendFile(__dirname + '/views/index.html'));
 
 app.listen(process.env.PORT, () => console.log('Your app is listening on port ' + process.env.PORT));

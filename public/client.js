@@ -55,15 +55,13 @@ const offer_timer = setInterval(async () => {
   
   other_userid = peers.find(p => p !== userid);
   
-  if (other) {
+  if (other_userid) {
     clearInterval(offer_timer);
     
-    other_userid = other;
-    
-    await fetch('/peers/pop/' + other_userid);
+    await fetch('/peers/pop?userid=' + other_userid);
     
     if (!receive_channel) {
-      const offer = connection.createOffer();
+      const offer = await connection.createOffer();
       offer.userid = userid;
       
       await fetch('/offer', {
@@ -76,13 +74,32 @@ const offer_timer = setInterval(async () => {
   }
 }, 2000);
                                           
-// Answer offer
+// Send answer
 
 const answer_timer = setInterval(async () => {
   const offers = await (await fetch('/offers')).json();
   const other_offer = offers.find(x => x.userid !== userid);
   
   if (other_offer) {
+    clearInterval(answer_timer);
     
+    await fetch('/offers/pop?userid=' + other_offer.userid);
+    
+    if (!receive_channel) {
+      const answer = await connection.createAnswer();
+      answer.userid = userid;
+      
+      await fetch('/answer', {
+        method: 'POST',
+        body: JSON.stringify(answer)
+      });
+      
+      connection.setLocalDescription(answer);
+      connection.setRemoteDescription(other_offer);
+    }
   }
 }, 2000);
+
+// Handle answer
+
+const answer_
