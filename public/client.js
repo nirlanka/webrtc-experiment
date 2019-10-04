@@ -26,3 +26,30 @@ connection.onicecandidate = async e => {
   }
 }
 
+// Incoming channel
+
+let receive_channel;
+
+connection.ondatachannel = e => {
+  receive_channel = e.channel;
+  
+  receive_channel.onmessage = e => console.log(e.data);
+  
+  receive_channel.onopen = e => console.log('readyState', receive_channel.readyState);
+}
+
+// Outgoing channel
+
+const send_channel = connection.createDataChannel('channel-1');
+
+send_channel.onmessage = e => console.log(other_userid, 'sent', e.data);
+
+send_channel.onopen = e => console.log('readyState', send_channel.readyState);
+
+// Call other
+
+(async )
+                                          
+// Temp
+                                          
+var other_userid;

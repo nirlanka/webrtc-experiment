@@ -6,9 +6,12 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 
 let ice = [];
+let peers = [];
 
 app.post('/ice', (req, res) => {
   ice.push(req.body);
+  peers.push(req.body.userid);
+  
   res.sendStatus(200);
 });
 
