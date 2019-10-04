@@ -12,7 +12,11 @@ let answers = [];
 
 app.get('/reset', (req, res) => {
   ice = [];
-  peers = p
+  peers = [];
+  offers = [];
+  answers = [];
+  
+  res.sendStatus(200);
 })
 
 app.post('/ice', (req, res) => {
@@ -73,7 +77,7 @@ app.get('/ice', (req, res) => {
 
 app.get('/offers', (req, res) => res.send(offers));
 
-app.get('/answers', (req, res) => res.send(offers));
+app.get('/answers', (req, res) => res.send(answers));
 
 app.get('/', (req, res) => res.sendFile(__dirname + '/views/index.html'));
 
