@@ -10,6 +10,11 @@ let peers = [];
 let offers = [];
 let answers = [];
 
+app.get('/reset', (req, res) => {
+  ice = [];
+  peers = p
+})
+
 app.post('/ice', (req, res) => {
   ice.push(req.body);
   peers.push(req.body.userid);
@@ -57,6 +62,18 @@ app.get('/answers/pop', (req, res) => {
   
   res.sendStatus(200);
 });
+
+app.get('/ice', (req, res) => {
+  const { userid } = req.query;
+  
+  res.send(ice.filter(x => x.userid === userid));
+  
+  ice = ice.filter(x => x.userid !== userid);
+});
+
+app.get('/offers', (req, res) => res.send(offers));
+
+app.get('/answers', (req, res) => res.send(offers));
 
 app.get('/', (req, res) => res.sendFile(__dirname + '/views/index.html'));
 

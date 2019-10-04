@@ -33,7 +33,12 @@ let receive_channel;
 connection.ondatachannel = e => {
   receive_channel = e.channel;
   
-  receive_channel.onmessage = e => console.log(e.data);
+  receive_channel.onmessage = e => {
+    console.log(other_userid, 'sent', e.data);
+    
+    // Send message (2)
+    send_pong();
+  }
   
   receive_channel.onopen = e => console.log('readyState', receive_channel.readyState);
 }
@@ -42,7 +47,7 @@ connection.ondatachannel = e => {
 
 const send_channel = connection.createDataChannel('channel-1');
 
-send_channel.onmessage = e => console.log(other_userid, 'sent', e.data);
+send_channel.onmessage = e => console.log('Sent', e.data, 'to', other_userid);
 
 send_channel.onopen = e => console.log('readyState', send_channel.readyState);
 
@@ -96,6 +101,8 @@ const answer_timer = setInterval(async () => {
       
       connection.setLocalDescription(answer);
       connection.setRemoteDescription(other_offer);
+      
+      watch_candidates();
     }
   }
 }, 2000);
@@ -130,4 +137,14 @@ function send_ping() {
 
 function send_pong() {
   send_channel.send('pong');
+}
+
+// Watch candidates
+
+function watch_candidates() {
+  const watch_candidates_timer = setInterval(async () => {
+    const candidates = await (await fetch('/ice?userid=' + other_userid)).json();
+    
+    candidates.forEach(c => connection.addIceCandidate(c));
+  }, 4000);
 }
