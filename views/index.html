@@ -15,8 +15,14 @@
   
   <body>
     
-    <select id="peer-select" size="3" onchange="onselect_peer(this)">
+    <select id="peer-select" size="3" onclick="onselect_peer(this)">
     </select>
+    
+    <br>
+    
+    from <span id="self-id"></span> to <span id="selected-peer-id"></span>
+    
+    <br>
     
     <button onclick="onclick_send_message()">Send a message</button>
     

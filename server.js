@@ -31,6 +31,7 @@ app.post('/drop', (req, res) => {
 
 app.get('/clear', (req, res) => {
   peers = [];
+  id = 0;
   res.send(peers);
 })
 
