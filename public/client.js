@@ -77,9 +77,7 @@ const offer_timer = setInterval(async () => {
     clearInterval(offer_timer);
     
     await fetch('/peers/pop?userid=' + other_userid);
-  }
-
-  if (!receive_channel) {
+  } else if (!receive_channel) {
     clearInterval(offer_timer);
 
     const offer = JSON.parse(JSON.stringify(await connection.createOffer()));
@@ -112,6 +110,8 @@ const answer_timer = setInterval(async () => {
     clearInterval(answer_timer);
 
     await fetch('/offers/pop?userid=' + other_offer.userid);
+
+    connection.setRemoteDescription(other_offer);
     
     if (!receive_channel) {
       const answer = JSON.parse(JSON.stringify(await connection.createAnswer()));
@@ -125,7 +125,6 @@ const answer_timer = setInterval(async () => {
       });
       
       connection.setLocalDescription(answer);
-      connection.setRemoteDescription(other_offer);
       
       watch_candidates();
     }
@@ -180,4 +179,10 @@ function watch_candidates() {
     
     candidates.forEach(c => connection.addIceCandidate(c));
   }, 4000);
+}
+
+// Negotiation
+
+connection.onnegotiationneeded = e => {
+  if (connection.signalingState !== 'stable') return;
 }
